@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DonVault - Private Records</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+body{background:#0a0a0a;color:#fff;min-height:100vh}
+.container{max-width:1100px;margin:0 auto;padding:20px}
+.card{background:#151515;border:1px solid #222;border-radius:16px;padding:24px}
+.btn{background:#fff;color:#000;padding:12px 20px;border-radius:10px;border:0;font-weight:700;cursor:pointer;width:100%;transition:.2s}
+.btn:hover{opacity:.9;transform:translateY(-1px)}
+.btn-google{background:#222;color:#fff;border:1px solid #333;display:flex;align-items:center;justify-content:center;gap:10px}
+.input{width:100%;background:#1e1e1e;border:1px solid #333;padding:12px 14px;border-radius:10px;color:#fff;outline:none;margin-top:8px}
+.input:focus{border-color:#666}
+.badge{font-size:12px;background:#222;padding:4px 10px;border-radius:20px;border:1px solid #333;color:#aaa}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.hidden{display:none}
+.tab{padding:10px 18px;border-radius:20px;cursor:pointer;border:1px solid #333;background:#151515;color:#888}
+.tab.active{background:#fff;color:#000;border-color:#fff}
+.top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+h1{font-size:42px;letter-spacing:-1px}
+</style>
+</head>
+<body>
+<div class="container">
+  <div id="authScreen">
+    <div style="max-width:420px;margin:60px auto">
+      <h1>LIFE IS NOT ABOUT</h1>
+      <p style="color:#888;margin:10px 0 24px">faking • pressure • forcing. This vault is ONLY for you.</p>
+      <div class="card">
+        <h3 style="margin-bottom:16px">Create Account / Login</h3>
+        <label style="color:#aaa;font-size:13px">Full Name</label>
+        <input class="input" id="regName" placeholder="Don">
+        <label style="color:#aaa;font-size:13px;margin-top:14px;display:block">Email</label>
+        <input class="input" id="regEmail" placeholder="don@gmail.com">
+        <label style="color:#aaa;font-size:13px;margin-top:14px;display:block">Password</label>
+        <input class="input" id="regPass" type="password" placeholder="••••••••">
+        <button class="btn" style="margin-top:20px" onclick="login()">Register & Enter Vault</button>
+        <div style="text-align:center;margin:14px 0;color:#555">OR</div>
+        <button class="btn btn-google" onclick="login()"><img src="https://www.svgrepo.com/show/475656/google-color.svg" width="18"> Continue with Google</button>
+        <p style="font-size:11px;color:#666;margin-top:14px;text-align:center">Edited by Don • Private & Encrypted</p>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <p style="font-size:13px;color:#aaa"><b style="color:#fff">What you'll get:</b><br>
+        1. Personal Dialogue - daily thoughts like dialogue book<br>
+        2. Money - income / expenses tracker<br>
+        3. My Usage - airtime, bundles, subs, habits</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="dashScreen" class="hidden">
+    <div class="top">
+      <div>
+        <h1 style="font-size:28px">DonVault</h1>
+        <p style="color:#666;font-size:13px" id="userInfo"></p>
+      </div>
+      <button class="tab" onclick="logout()">Logout</button>
+    </div>
+    <div style="display:flex;gap:8px;margin:20px 0;flex-wrap:wrap">
+      <div class="tab active" onclick="switchTab('dialogue')" id="tab-dialogue">Personal Dialogue</div>
+      <div class="tab" onclick="switchTab('money')" id="tab-money">Money</div>
+      <div class="tab" onclick="switchTab('usage')" id="tab-usage">My Usage</div>
+    </div>
+
+    <div id="sec-dialogue">
+      <div class="card">
+        <h3>New Dialogue Entry</h3>
+        <textarea class="input" id="dText" rows="4" placeholder="How was today?"></textarea>
+        <div class="grid" style="margin-top:12px">
+          <select class="input" id="dMood"><option>😊 Happy</option><option>😐 Neutral</option><option>😔 Low</option><option>🔥 Motivated</option></select>
+          <button class="btn" onclick="addDialogue()">Save Dialogue</button>
+        </div>
+      </div>
+      <div id="dialogueList" style="margin-top:16px" class="grid"></div>
+    </div>
+
+    <div id="sec-money" class="hidden">
+      <div class="grid">
+        <div class="card"><small style="color:#888">Balance</small><h2 id="bal">KES 0</h2></div>
+        <div class="card"><small style="color:#888">Income</small><h2 id="inc" style="color:#4ade80">KES 0</h2></div>
+        <div class="card"><small style="color:#888">Expenses</small><h2 id="exp" style="color:#f87171">KES 0</h2></div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="grid">
+          <input class="input" id="mDesc" placeholder="Description e.g. Lunch">
+          <input class="input" id="mAmount" type="number" placeholder="Amount">
+          <select class="input" id="mType"><option value="expense">Expense</option><option value="income">Income</option></select>
+          <button class="btn" onclick="addMoney()">Add Record</button>
+        </div>
+      </div>
+      <div id="moneyList" style="margin-top:16px"></div>
+    </div>
+
+    <div id="sec-usage" class="hidden">
+      <div class="card">
+        <div class="grid">
+          <input class="input" id="uWhat" placeholder="What did you use? e.g. Safaricom 5GB">
+          <input class="input" id="uCost" placeholder="Cost / Amount e.g. 500">
+          <button class="btn" onclick="addUsage()">Add Usage</button>
+        </div>
+      </div>
+      <div id="usageList" style="margin-top:16px" class="grid"></div>
+    </div>
+    <p style="text-align:right;color:#333;font-size:11px;margin-top:20px">Edited by Don</p>
+  </div>
+</div>
+
+<script>
+let data = JSON.parse(localStorage.getItem('donvault')||'{"dialogue":[],"money":[],"usage":[]}');
+function login(){
+ const name = document.getElementById('regName').value || 'Don';
+ const email = document.getElementById('regEmail').value || 'don@gmail.com';
+ if(!email) return alert('Enter email');
+ localStorage.setItem('donvault_user', JSON.stringify({name,email}));
+ document.getElementById('userInfo').innerHTML = `Welcome back, ${name} • ${email} <span class="badge">Private</span>`;
+ document.getElementById('authScreen').classList.add('hidden');
+ document.getElementById('dashScreen').classList.remove('hidden');
+ renderAll();
+}
+function logout(){ localStorage.removeItem('donvault_user'); location.reload(); }
+function switchTab(t){
+ ['dialogue','money','usage'].forEach(x=>{
+  document.getElementById('sec-'+x).classList.add('hidden');
+  document.getElementById('tab-'+x).classList.remove('active');
+ });
+ document.getElementById('sec-'+t).classList.remove('hidden');
+ document.getElementById('tab-'+t).classList.add('active');
+}
+function addDialogue(){
+ const text=document.getElementById('dText').value;
+ if(!text) return;
+ data.dialogue.unshift({text,mood:document.getElementById('dMood').value,date:new Date().toLocaleString()});
+ save(); document.getElementById('dText').value=''; renderDialogue();
+}
+function addMoney(){
+ const desc=document.getElementById('mDesc').value, amt=parseFloat(document.getElementById('mAmount').value), type=document.getElementById('mType').value;
+ if(!desc||!amt) return alert('Fill all');
+ data.money.unshift({desc,amt,type,date:new Date().toLocaleDateString()}); save(); renderMoney();
+ document.getElementById('mDesc').value=''; document.getElementById('mAmount').value='';
+}
+function addUsage(){
+ const what=document.getElementById('uWhat').value, cost=document.getElementById('uCost').value;
+ if(!what) return;
+ data.usage.unshift({what,cost,date:new Date().toLocaleDateString()}); save(); renderUsage();
+ document.getElementById('uWhat').value=''; document.getElementById('uCost').value='';
+}
+function save(){localStorage.setItem('donvault',JSON.stringify(data))}
+function renderDialogue(){
+ document.getElementById('dialogueList').innerHTML = data.dialogue.map(d=>`<div class="card"><small style="color:#666">${d.date} • ${d.mood}</small><p style="margin-top:8px">${d.text}</p></div>`).join('') || '<p style="color:#555">No entries yet</p>';
+}
+function renderMoney(){
+ let inc=0,exp=0;
+ data.money.forEach(m=> m.type==='income'? inc+=m.amt : exp+=m.amt);
+ document.getElementById('inc').textContent='KES '+inc; document.getElementById('exp').textContent='KES '+exp;
+ document.getElementById('bal').textContent='KES '+(inc-exp);
+ document.getElementById('moneyList').innerHTML = data.money.map(m=>`<div class="card" style="display:flex;justify-content:space-between;margin-bottom:8px"><span>${m.desc} <small style="color:#666">${m.date}</small></span><span style="color:${m.type==='income'?'#4ade80':'#f87171'}">${m.type==='income'?'+':'-'}KES ${m.amt}</span></div>`).join('');
+}
+function renderUsage(){
+ document.getElementById('usageList').innerHTML = data.usage.map(u=>`<div class="card"><small style="color:#666">${u.date}</small><h4 style="margin-top:6px">${u.what}</h4><p style="color:#888">${u.cost}</p></div>`).join('') || '<p style="color:#555">No usage yet</p>';
+}
+function renderAll(){renderDialogue();renderMoney();renderUsage();}
+if(localStorage.getItem('donvault_user')){ const u=JSON.parse(localStorage.getItem('donvault_user')); document.getElementById('regName').value=u.name; document.getElementById('regEmail').value=u.email; login();}
+</script>
+</body>
+  </html>
